@@ -1,14 +1,14 @@
 import React from 'react';
 import {
   useParams,
-  useLocation
+  useLocation,
+  useNavigate
 } from "react-router-dom";
 import {useState, useEffect } from  'react';
 import './Forums.css';
 
-
-
 const PostForm = ({forum_data}) => {
+  const navigate = useNavigate();
 
   function handlePost (e) {
     // Prevent the browser from reloading the page
@@ -31,6 +31,8 @@ const PostForm = ({forum_data}) => {
   
     fetch("http://localhost:5005/forums/"+forum_data, requestOptions).then((response) => {
       console.log(response);
+      alert("Message posted");
+      navigate("/forums");
     });
     
   }
@@ -48,9 +50,32 @@ const PostForm = ({forum_data}) => {
     </form >
   );
 }
+
 const PostDisplay = ({data}) =>{
   const DisplayData=data.map(
       (post)=>{
+        console.log("inside first level map function post replies are:", post.replies);
+        
+        const replyrows = post.replies[0].map((reply) =>{
+          
+          console.log("inside second level map function reply is:", reply);
+          return(
+            <>
+            <tr>
+              <td colSpan = {1}></td>
+              <td>ID:</td>
+              <td>{reply.poster_id}</td>
+              <td>Time:</td>
+              <td>{reply.post_time}</td>
+            </tr>
+            <tr>
+              <td colSpan = {1}></td>
+              <td colSpan={2}>{reply.body}</td>
+            </tr>
+            </>
+          ) 
+         
+        })
           return(
             <tbody>
               <tr>
@@ -66,7 +91,12 @@ const PostDisplay = ({data}) =>{
               <tr>
                   <td colSpan={2}>{post.body}</td>
               </tr>
+              
+                {replyrows}
+              
+            
             </tbody>
+            
           )
       }
   )
@@ -75,6 +105,9 @@ const PostDisplay = ({data}) =>{
       <div>
           <table class="table table-striped">
                   {DisplayData}
+          </table>
+          <table>
+
           </table>
       </div>
   )
