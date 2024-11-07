@@ -1,5 +1,5 @@
 textarea {
-    width: 100%;
+    width: 65%;
     height: 150px;
     padding: 12px 20px;
     box-sizing: border-box;
@@ -7,4 +7,42 @@ textarea {
     border-radius: 4px;
     background-color: #f8f8f8;
     resize: none;
+  }
+
+  table {
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: #96D4D4;
+    padding: 15px;
+    width: 85%;
+
+  }
+ 
+  button {
+    border-radius: 10px;
+    border: none;
+
+  }
+
+  .reply-table {
+    margin-left: 100px;
+
+  }
+
+  .hidden {
+    visibility: hidden;
+    border: none;
+  }
+
+  .post-display{
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: #96D4D4;
+    padding: 15px;
+
+  }
+
+  hr {
+    border: 5px solid #730080;
+    border-radius: 5px;
   }

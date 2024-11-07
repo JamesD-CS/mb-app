@@ -9,6 +9,7 @@ import reportWebVitals from './reportWebVitals';
 import Root from "./root";
 import Forums from './Forums';
 
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -16,8 +17,8 @@ const router = createBrowserRouter([
   },
   {
     path: "Forums/:forumId/",
-    element: <Forums />,
-  },
+    element: <Forums />
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(

@@ -3,31 +3,6 @@ import {useState, useEffect} from  'react';
 import { Link } from 'react-router-dom';
 
 
-const TableComponent = ({ data }) => {
-  //const headers = Object.keys(data[0]);
-  const rows = data.map(item => Object.values(item));
-  
-
-  return (
-    <table>
-      <thead>
-        <tr>
-          <th>
-          Forums
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row, index) => (
-          <tr key={index}>
-            <a href={`/Forums/`}>{row.map((cell, index) => <td key={index}>{cell}</td>)}</a>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-};
-
 const ULComponent = ({data}) => {
   return (
   
@@ -99,8 +74,6 @@ export default function Root() {
           <ULComponent data={forums} />
 
           </nav>
-
-          
 
         </div>
         <div id="detail"></div>
