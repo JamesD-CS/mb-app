@@ -6,11 +6,12 @@ import { Link } from 'react-router-dom';
 const ULComponent = ({data}) => {
   return (
   
-    <ul>
+    <ul >
       {data.map(item => {
         //return <a href={'/Forums/'+ item.forum_id+'/'+ item.forum_name}><li>{item.forum_name}</li> </a>;
-        return <Link to={'/Forums/'+item.forum_id}  state={{ forum_id: item.forum_id, forum_name:item.forum_name }}>
-            <li>{item.forum_name}</li>
+        return <Link to={'/Forums/'+item.forum_id}  
+        state={{ forum_id: item.forum_id, forum_name:item.forum_name, page_number:1, page_limit:10 }}>
+            <li className="link">{item.forum_name}</li>
          </Link>
       })}
     </ul>

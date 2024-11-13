@@ -7,9 +7,20 @@ import {
 import { createPortal } from 'react-dom';
 import {useState, useEffect } from  'react';
 import ModalContent from './ReplyModal.js';
+import Page_set from './Pageset.js';
+import PageView from './PageView.js';
 import './Forums.css';
 
 //import { DateTime } from 'luxon';
+
+function request_builder(api_endpoint, forumid, page_limit, page_number){
+
+  let url = api_endpoint += forumid + '?page_limit=' + page_limit + '&page='+ page_number;
+
+  return url
+
+};
+
 
 const PostForm = ({forum_data, post_id}) => {
   const navigate = useNavigate();
@@ -192,13 +203,20 @@ const ReplyPortal = ({div_id, poster_id, forum_id}) => {
 }
 
 export default function Forums(){
-    const [forums, setForums] = useState([]);
     let  urlParams  = useParams();
     let forumId = urlParams.forumId;
     let forumInfo = useLocation();
     let forumName = forumInfo.state.forum_name;
-
-    const fetchData = () => {
+    let page_limit_state = forumInfo.state.page_limit;
+    let page_number = forumInfo.state.page_number;
+    const [forums, setForums] = useState([]);
+    const [postCount, setPostCount] = useState();
+    const [postLimit, setPostLimit] = useState(page_limit_state);
+    const [pageNumber, setPageNumber] = useState(page_number);
+    
+    let api_endpoint = "http://localhost:5005/forums/";
+ 
+    const fetchData = (req_url) => {
 
       const requestOptions = {
         method: 'GET',
@@ -209,24 +227,32 @@ export default function Forums(){
         mode:'cors'
         
       };
-      console.log("fetching data from API");
-      console.log(forumId);
-      console.log(forumName);
-      fetch("http://localhost:5005/forums/"+forumId, requestOptions).then(response => response.json())
+      console.log("fetching data from API, url is:", req_url);
+      fetch(req_url, requestOptions).then(response => response.json())
       .then((data) => {
         console.log('json response from API is:',data);
-        //console.log("forum id is", forumId.forumId);
-        setForums(data);
         
+        setForums(data.posts);
+        console.log("total posts:", data.total_posts)
+        setPostCount(data.total_posts[0].count);
       });
      
     };
     
     useEffect(() => {
-      
-      fetchData();
+      let post_per_page;
+      console.log("post limit:", page_limit_state, "page_number", page_number);
+      console.log("req_builder:", );
+      if (postLimit > 0 ){
+        post_per_page = postLimit
+      }else{
+        post_per_page = page_limit_state
+      }
+      let complete_req = request_builder(api_endpoint, forumId, post_per_page, pageNumber);
 
-      }, []);
+      fetchData(complete_req);
+
+      }, [postCount, postLimit, pageNumber]);
 
     return (
         <div className="App">
@@ -235,7 +261,13 @@ export default function Forums(){
           <h1>Forum : {forumName}</h1>
           <PostForm forum_data={forumId} post_id={''}/>
           <br/>
-          
+          Page Count: {postLimit}
+          <br />
+          Total Posts: {postCount}
+          <br />
+          <PageView current_page = {pageNumber} post_count={postCount} post_limit={postLimit} page_number_callback={setPageNumber} forumid={forumId} forumName={forumName}/>
+          <br />
+          <Page_set pageChangeCallback={setPostLimit} />
           <br />
           <PostDisplay data={forums} forum_id={forumId} />
           
