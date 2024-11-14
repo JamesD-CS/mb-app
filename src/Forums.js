@@ -9,6 +9,7 @@ import {useState, useEffect } from  'react';
 import ModalContent from './ReplyModal.js';
 import Page_set from './Pageset.js';
 import PageView from './PageView.js';
+import PostView from './Post_view.js';
 import './Forums.css';
 
 //import { DateTime } from 'luxon';
@@ -20,7 +21,6 @@ function request_builder(api_endpoint, forumid, page_limit, page_number){
   return url
 
 };
-
 
 const PostForm = ({forum_data, post_id}) => {
   const navigate = useNavigate();
@@ -64,7 +64,7 @@ const PostForm = ({forum_data, post_id}) => {
     //Post message to api.
     fetch(postendpoint, requestOptions).then((response) => {
       console.log(response);
-      alert("Message posted");
+      //alert("Message posted");
       navigate(0);
     });
     
@@ -93,115 +93,6 @@ const PostForm = ({forum_data, post_id}) => {
   );
 }
 
-
-const PostDisplay = ({data, forum_id}) =>{
-
-  const ReplyRows = ({replies, colspan}) =>{
-    //console.log('inside replyrows replies are', replies);
-    let replyrows = [];
-      if(replies){
-      replies.map((reply) =>{
-        if (reply.replies[0]){
-            //console.log('reply replies are:', reply.replies[0]);
-        }
-        //console.log("inside second level map function reply is:", reply);
-        replyrows.push(
-
-            <table className="reply-table">
-              <tbody>
-              <tr>
-                <td colSpan = {colspan +1} className='hidden'></td>
-                <td>ID:</td>
-                <td>{reply.poster_id}</td>
-                <td>Time:</td>
-                <td>{reply.post_time}</td>
-              </tr>
-              <tr>
-                <td colSpan = {colspan} className='hidden'></td>
-                <td colSpan={colspan + 1}>{reply.body}</td>
-              </tr>
-              <tr>
-                <td colSpan = {colspan} className='hidden'></td>
-                <td>
-                  <div id = {reply.poster_id}> 
-                    <ReplyPortal div_id={reply.poster_id} poster_id = {reply.poster_id} forum_id={forum_id}/>          
-                  </div>
-                </td>
-              </tr>  
-            </tbody>
-          </table>
-        )
-      })
-    }
-    return replyrows;
-    
-  };
-
-  const DisplayData=data.map(
-      (post)=>{
-
-       //console.log("inside first level map function post replies are:", post.replies);
-       
-          return(
-            <div id = {post.poster_id}>
-            <table >
-              <tbody>
-                <tr>
-                    <td>ID:</td>
-                    <td>{post.poster_id}</td>
-                    <td>Time:</td>
-                    <td>{post.post_time}</td>
-                </tr>
-                <tr>
-                    <td>Title:</td>
-                    <td>{post.title}</td>
-                </tr>
-                <tr>
-                    <td colSpan={2}>{post.body}</td>
-                </tr>
-                <tr>
-                  <td>
-                    <div id = {post.poster_id}>
-                      <ReplyPortal div_id={post.poster_id} poster_id={post.poster_id} forum_id={forum_id} />  
-                    </div>
-                  </td>
-                </tr>
-             
-            </tbody>
-            </table>
-            <ReplyRows replies={post.replies[0]} colspan ={1}/>
-            </div>
-            
-          )
-      }
-  )
-
-  return(
-      <div>
-          
-                  {DisplayData}
-
-      </div>
-  )
-};
-
-const ReplyPortal = ({div_id, poster_id, forum_id}) => {
-  const [showModal, setShowModal] = useState(false);
-  return (
-    <>
-      {!showModal &&
-      <button onClick={() => setShowModal(true)}>
-        Reply
-      </button>
-      }
-      {showModal && createPortal(
-        <ModalContent onClose={() => setShowModal(false)}  poster_id = {poster_id} forum_id={forum_id} />,
-        document.getElementById(div_id)
-      )}
-    </>
-  );
-}
-
 export default function Forums(){
     let  urlParams  = useParams();
     let forumId = urlParams.forumId;
@@ -209,7 +100,7 @@ export default function Forums(){
     let forumName = forumInfo.state.forum_name;
     let page_limit_state = forumInfo.state.page_limit;
     let page_number = forumInfo.state.page_number;
-    const [forums, setForums] = useState([]);
+    const [postData, setPostData] = useState([]);
     const [postCount, setPostCount] = useState();
     const [postLimit, setPostLimit] = useState(page_limit_state);
     const [pageNumber, setPageNumber] = useState(page_number);
@@ -232,7 +123,7 @@ export default function Forums(){
       .then((data) => {
         console.log('json response from API is:',data);
         
-        setForums(data.posts);
+        setPostData(data.posts);
         console.log("total posts:", data.total_posts)
         setPostCount(data.total_posts[0].count);
       });
@@ -269,7 +160,7 @@ export default function Forums(){
           <br />
           <Page_set pageChangeCallback={setPostLimit} />
           <br />
-          <PostDisplay data={forums} forum_id={forumId} />
+          <PostView data={postData} forum_id={forumId}/>
           
         </div>
     );
